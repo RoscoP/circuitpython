@@ -328,3 +328,15 @@
 [submodule "frozen/Adafruit_CircuitPython_SSD1680"]
 	path = frozen/Adafruit_CircuitPython_SSD1680
 	url = https://github.com/adafruit/Adafruit_CircuitPython_SSD1680
+[submodule "frozen/Adafruit_CircuitPython_LED_Animation"]
+	path = frozen/Adafruit_CircuitPython_LED_Animation
+	url = https://github.com/adafruit/Adafruit_CircuitPython_LED_Animation
+[submodule "frozen/Adafruit_CircuitPython_datetime"]
+	path = frozen/Adafruit_CircuitPython_datetime
+	url = https://github.com/adafruit/Adafruit_CircuitPython_datetime
+[submodule "frozen/Adafruit_CircuitPython_Logging"]
+	path = frozen/Adafruit_CircuitPython_Logging
+	url = https://github.com/adafruit/Adafruit_CircuitPython_Logging
+[submodule "frozen/Adafruit_CircuitPython_Pixelbuf"]
+	path = frozen/Adafruit_CircuitPython_Pixelbuf
+	url = https://github.com/adafruit/Adafruit_CircuitPython_Pixelbuf

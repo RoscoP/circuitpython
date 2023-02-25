@@ -17,6 +17,7 @@ import subprocess
 def version_string(path=None, *, valid_semver=False):
     version = None
     try:
+        print(f'::::: {path}')
         tag = subprocess.check_output("git describe --tags --exact-match", shell=True, cwd=path)
         version = tag.strip().decode("utf-8", "strict")
     except subprocess.CalledProcessError:

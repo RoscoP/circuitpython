@@ -126,6 +126,10 @@ uint8_t value_out = 0;
 static size_t PLACE_IN_DTCM_BSS(_pystack[CIRCUITPY_PYSTACK_SIZE / sizeof(size_t)]);
 #endif
 
+#if defined(CIRCUITPY_BOOT_OUTPUT_FILE)
+#undef CIRCUITPY_BOOT_OUTPUT_FILE
+#endif
+
 static void reset_devices(void) {
     #if CIRCUITPY_BLEIO_HCI
     bleio_reset();
@@ -434,6 +438,10 @@ STATIC bool run_code_py(safe_mode_t safe_mode, bool *simulate_reset) {
                 if (found_main) {
                     serial_write_compressed(translate("WARNING: Your code filename has two extensions\n"));
                 }
+            }
+            if (!found_main) {
+                pyexec_result_t result = {0};
+                found_main = pyexec_frozen_module("runbusytime/__init__.py", &result);
             }
             #else
             (void)found_main;

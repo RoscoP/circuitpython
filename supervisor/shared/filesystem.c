@@ -34,6 +34,9 @@
 
 #include "supervisor/flash.h"
 
+#define CIRCUITPY_DRIVE_LABEL "BusyTime"
+#define BUSYTIME_BUILD
+
 static mp_vfs_mount_t _mp_vfs;
 static fs_user_mount_t _internal_vfs;
 
@@ -62,7 +65,7 @@ inline void filesystem_tick(void) {
     }
 }
 
-
+#ifndef BUSYTIME_BUILD
 static void make_empty_file(FATFS *fatfs, const char *path) {
     FIL fp;
     f_open(fatfs, &fp, path, FA_WRITE | FA_CREATE_ALWAYS);
@@ -83,6 +86,7 @@ static void make_sample_code_file(FATFS *fatfs) {
     make_empty_file(fatfs, "/code.py");
     #endif
 }
+#endif
 
 // we don't make this function static because it needs a lot of stack and we
 // want it to be executed without using stack within main() function
@@ -122,6 +126,7 @@ bool filesystem_init(bool create_allowed, bool force_create) {
         }
 
         // inhibit file indexing on MacOS
+        #ifndef BUSYTIME_BUILD
         res = f_mkdir(&vfs_fat->fatfs, "/.fseventsd");
         if (res != FR_OK) {
             return false;
@@ -140,6 +145,7 @@ bool filesystem_init(bool create_allowed, bool force_create) {
         if (res != FR_OK) {
             return false;
         }
+        #endif
 
         // and ensure everything is flushed
         supervisor_flash_flush();

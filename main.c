@@ -126,8 +126,8 @@ uint8_t value_out = 0;
 static size_t PLACE_IN_DTCM_BSS(_pystack[CIRCUITPY_PYSTACK_SIZE / sizeof(size_t)]);
 #endif
 
-#if defined(CIRCUITPY_BOOT_OUTPUT_FILE)
-#undef CIRCUITPY_BOOT_OUTPUT_FILE
+#if BUSYTIME_ENABLED && defined(CIRCUITPY_BOOT_OUTPUT_FILE)
+// #undef CIRCUITPY_BOOT_OUTPUT_FILE
 #endif
 
 static void reset_devices(void) {
@@ -242,8 +242,10 @@ STATIC bool maybe_run_list(const char *const *filenames, size_t n_filenames) {
     if (_current_executing_filename == NULL) {
         return false;
     }
-    mp_hal_stdout_tx_str(_current_executing_filename);
-    serial_write_compressed(translate(" output:\n"));
+    #if !BUSYTIME_ENABLED
+        mp_hal_stdout_tx_str(_current_executing_filename);
+        serial_write_compressed(translate(" output:\n"));
+    #endif
 
     #if CIRCUITPY_STATUS_BAR
     supervisor_status_bar_update();
@@ -439,10 +441,12 @@ STATIC bool run_code_py(safe_mode_t safe_mode, bool *simulate_reset) {
                     serial_write_compressed(translate("WARNING: Your code filename has two extensions\n"));
                 }
             }
+            #if BUSYTIME_ENABLED
             if (!found_main) {
                 pyexec_result_t result = {0};
                 found_main = pyexec_frozen_module("runbusytime/__init__.py", &result);
             }
+            #endif
             #else
             (void)found_main;
             #endif

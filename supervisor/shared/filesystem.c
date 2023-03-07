@@ -34,8 +34,9 @@
 
 #include "supervisor/flash.h"
 
+#if BUSYTIME_ENABLED
 #define CIRCUITPY_DRIVE_LABEL "BusyTime"
-#define BUSYTIME_BUILD
+#endif
 
 static mp_vfs_mount_t _mp_vfs;
 static fs_user_mount_t _internal_vfs;
@@ -65,7 +66,7 @@ inline void filesystem_tick(void) {
     }
 }
 
-#ifndef BUSYTIME_BUILD
+#if !BUSYTIME_ENABLED
 static void make_empty_file(FATFS *fatfs, const char *path) {
     FIL fp;
     f_open(fatfs, &fp, path, FA_WRITE | FA_CREATE_ALWAYS);
@@ -126,7 +127,7 @@ bool filesystem_init(bool create_allowed, bool force_create) {
         }
 
         // inhibit file indexing on MacOS
-        #ifndef BUSYTIME_BUILD
+        #if !BUSYTIME_ENABLED
         res = f_mkdir(&vfs_fat->fatfs, "/.fseventsd");
         if (res != FR_OK) {
             return false;

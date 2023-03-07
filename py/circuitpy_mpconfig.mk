@@ -349,6 +349,10 @@ CFLAGS += -DCIRCUITPY_RANDOM=$(CIRCUITPY_RANDOM)
 CIRCUITPY_RE ?= $(CIRCUITPY_FULL_BUILD)
 CFLAGS += -DCIRCUITPY_RE=$(CIRCUITPY_RE)
 
+# BusyTime specific modules.
+BUSYTIME_ENABLED ?= 0
+CFLAGS += -DBUSYTIME_ENABLED=$(BUSYTIME_ENABLED)
+
 # Should busio.I2C() check for pullups?
 # Some boards in combination with certain peripherals may not want this.
 CIRCUITPY_REQUIRE_I2C_PULLUPS ?= 1

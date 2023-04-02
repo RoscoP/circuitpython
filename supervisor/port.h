@@ -90,7 +90,11 @@ void port_interrupt_after_ticks(uint32_t ticks);
 // may not be a system level sleep.
 void port_idle_until_interrupt(void);
 
-// Execute port specific actions during background tasks.
+// Execute port specific actions during background tick. Only if ticks are enabled.
+void port_background_tick(void);
+
+// Execute port specific actions during background tasks. This is before the
+// background callback system.
 void port_background_task(void);
 
 // Take port specific actions at the beginning and end of background tasks.
@@ -123,5 +127,9 @@ void port_post_boot_py(bool heap_valid);
 // Some ports want to add information to boot_out.txt.
 // A default weak implementation is provided that does nothing.
 void port_boot_info(void);
+
+// Some ports want to mark additional pointers as gc roots.
+// A default weak implementation is provided that does nothing.
+void port_gc_collect(void);
 
 #endif  // MICROPY_INCLUDED_SUPERVISOR_PORT_H

@@ -34,10 +34,11 @@
 #include "components/hal/include/hal/gpio_hal.h"
 
 STATIC uint64_t _never_reset_pin_mask;
+STATIC uint64_t _skip_reset_once_pin_mask;
 STATIC uint64_t _preserved_pin_mask;
 STATIC uint64_t _in_use_pin_mask;
 
-// Bit mask of all pins that should never EVER be reset.
+// Bit mask of all pins that should never EVER be reset or used by user code.
 // Typically these are SPI flash and PSRAM control pins, and communication pins.
 // "Reset forbidden" is stronger than "never reset" below, which may only be temporary.
 static const uint64_t pin_mask_reset_forbidden =
@@ -61,6 +62,11 @@ static const uint64_t pin_mask_reset_forbidden =
     // Never ever reset serial/JTAG communication pins.
     GPIO_SEL_18 |         // USB D-
     GPIO_SEL_19 |         // USB D+
+    #endif
+    #if defined(CONFIG_ESP_CONSOLE_UART_DEFAULT) && CONFIG_ESP_CONSOLE_UART_DEFAULT && CONFIG_ESP_CONSOLE_UART_NUM == 0
+    // Never reset debug UART/console pins.
+    GPIO_SEL_20 |
+    GPIO_SEL_21 |
     #endif
     #endif // ESP32C3
 
@@ -92,6 +98,11 @@ static const uint64_t pin_mask_reset_forbidden =
     GPIO_SEL_19 |         // USB D-
     GPIO_SEL_20 |         // USB D+
     #endif
+    #if defined(CONFIG_ESP_CONSOLE_UART_DEFAULT) && CONFIG_ESP_CONSOLE_UART_DEFAULT && CONFIG_ESP_CONSOLE_UART_NUM == 0
+    // Don't reset/use the IDF UART console.
+    GPIO_SEL_43 | // UART TX
+    GPIO_SEL_44 | // UART RX
+    #endif
     #endif // ESP32S2, ESP32S3
 
     0;                    // Terminate last "|".
@@ -105,6 +116,15 @@ void never_reset_pin_number(gpio_num_t pin_number) {
         return;
     }
     _never_reset_pin_mask |= PIN_BIT(pin_number);
+}
+
+void skip_reset_once_pin_number(gpio_num_t pin_number) {
+    // Some CircuitPython APIs deal in uint8_t pin numbers, but NO_PIN is -1.
+    // Also allow pin 255 to be treated as NO_PIN to avoid crashes
+    if (pin_number == NO_PIN || pin_number == (uint8_t)NO_PIN) {
+        return;
+    }
+    _skip_reset_once_pin_mask |= PIN_BIT(pin_number);
 }
 
 void common_hal_never_reset_pin(const mcu_pin_obj_t *pin) {
@@ -124,6 +144,10 @@ STATIC bool _reset_forbidden(gpio_num_t pin_number) {
 
 STATIC bool _never_reset(gpio_num_t pin_number) {
     return _never_reset_pin_mask & PIN_BIT(pin_number);
+}
+
+STATIC bool _skip_reset_once(gpio_num_t pin_number) {
+    return _skip_reset_once_pin_mask & PIN_BIT(pin_number);
 }
 
 STATIC bool _preserved_pin(gpio_num_t pin_number) {
@@ -219,12 +243,15 @@ void reset_all_pins(void) {
         uint32_t iomux_address = GPIO_PIN_MUX_REG[i];
         if (iomux_address == 0 ||
             _never_reset(i) ||
+            _skip_reset_once(i) ||
             _preserved_pin(i)) {
             continue;
         }
         _reset_pin(i);
     }
-    _in_use_pin_mask = _never_reset_pin_mask;
+    _in_use_pin_mask = _never_reset_pin_mask | pin_mask_reset_forbidden;
+    // Don't continue to skip resetting these pins.
+    _skip_reset_once_pin_mask = 0;
 }
 
 void claim_pin_number(gpio_num_t pin_number) {

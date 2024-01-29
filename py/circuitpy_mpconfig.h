@@ -59,8 +59,8 @@ extern void common_hal_mcu_enable_interrupts(void);
 //
 // default is 128; consider raising to reduce fragmentation.
 #define MICROPY_ALLOC_PARSE_CHUNK_INIT   (16)
-// default is 512.
-#define MICROPY_ALLOC_PATH_MAX           (256)
+// default is 512. Longest path in .py bundle as of June 6th, 2023 is 73 characters.
+#define MICROPY_ALLOC_PATH_MAX           (96)
 #define MICROPY_CAN_OVERRIDE_BUILTINS    (1)
 #define MICROPY_COMP_CONST               (1)
 #define MICROPY_COMP_DOUBLE_TUPLE_ASSIGN (1)
@@ -439,8 +439,8 @@ struct _supervisor_allocation_node;
     const char *readline_hist[8]; \
     struct _supervisor_allocation_node *first_embedded_allocation; \
 
-void supervisor_run_background_tasks_if_tick(void);
-#define RUN_BACKGROUND_TASKS (supervisor_run_background_tasks_if_tick())
+void background_callback_run_all(void);
+#define RUN_BACKGROUND_TASKS (background_callback_run_all())
 
 #define MICROPY_VM_HOOK_LOOP RUN_BACKGROUND_TASKS;
 #define MICROPY_VM_HOOK_RETURN RUN_BACKGROUND_TASKS;

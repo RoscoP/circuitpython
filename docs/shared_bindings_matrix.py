@@ -40,6 +40,7 @@ SUPPORTED_PORTS = [
     "mimxrt10xx",
     "nrf",
     "raspberrypi",
+    "silabs",
     "stm",
 ]
 
@@ -68,28 +69,23 @@ ADDITIONAL_MODULES = {
     "array": "CIRCUITPY_ARRAY",
     # always available, so depend on something that's always 1.
     "builtins": "CIRCUITPY",
+    "builtins.pow3": "CIRCUITPY_BUILTINS_POW3",
+    "busio.SPI": "CIRCUITPY_BUSIO_SPI",
+    "busio.UART": "CIRCUITPY_BUSIO_UART",
     "collections": "CIRCUITPY_COLLECTIONS",
     "fontio": "CIRCUITPY_DISPLAYIO",
     "io": "CIRCUITPY_IO",
+    "keypad.KeyMatrix": "CIRCUITPY_KEYPAD_KEYMATRIX",
+    "keypad.Keys": "CIRCUITPY_KEYPAD_KEYS",
+    "keypad.ShiftRegisterKeys": "CIRCUITPY_KEYPAD_SHIFTREGISTERKEYS",
+    "os.getenv": "CIRCUITPY_OS_GETENV",
     "select": "MICROPY_PY_USELECT_SELECT",
-    "terminalio": "CIRCUITPY_DISPLAYIO",
     "sys": "CIRCUITPY_SYS",
+    "terminalio": "CIRCUITPY_DISPLAYIO",
     "usb": "CIRCUITPY_USB_HOST",
 }
 
-MODULES_NOT_IN_BINDINGS = [
-    "_asyncio",
-    "array",
-    "binascii",
-    "builtins",
-    "collections",
-    "errno",
-    "json",
-    "re",
-    "select",
-    "sys",
-    "ulab",
-]
+MODULES_NOT_IN_BINDINGS = [ "binascii", "errno", "json", "re", "ulab" ]
 
 FROZEN_EXCLUDES = ["examples", "docs", "tests", "utils", "conf.py", "setup.py"]
 """Files and dirs at the root of a frozen directory that should be ignored.
@@ -116,7 +112,7 @@ def get_bindings():
     bindings_modules = []
     for d in get_circuitpython_root_dir().glob("ports/*/bindings"):
         bindings_modules.extend(module.name for module in d.iterdir() if d.is_dir())
-    return shared_bindings_modules + bindings_modules + MODULES_NOT_IN_BINDINGS
+    return shared_bindings_modules + bindings_modules + MODULES_NOT_IN_BINDINGS + list(ADDITIONAL_MODULES.keys())
 
 
 def get_board_mapping():
@@ -174,7 +170,7 @@ def build_module_map():
             search_identifier = ADDITIONAL_MODULES[module]
         else:
             search_identifier = "CIRCUITPY_" + module.lstrip("_").upper()
-        re_pattern = f"{re.escape(search_identifier)}\s*\??=\s*(.+)"
+        re_pattern = fr"{re.escape(search_identifier)}\s*\??=\s*(.+)"
         find_config = re.findall(re_pattern, configs)
         if not find_config:
             continue
@@ -246,12 +242,12 @@ def get_repository_url(directory):
         with open(readme, "r") as fp:
             for line in fp.readlines():
                 if m := re.match(
-                    "\s+:target:\s+(http\S+(docs.circuitpython|readthedocs)\S+)\s*",
+                    r"\s+:target:\s+(http\S+(docs.circuitpython|readthedocs)\S+)\s*",
                     line,
                 ):
                     path = m.group(1)
                     break
-                if m := re.search("<(http[^>]+)>", line):
+                if m := re.search(r"<(http[^>]+)>", line):
                     path = m.group(1)
                     break
     if path is None:

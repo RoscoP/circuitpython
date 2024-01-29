@@ -94,7 +94,7 @@
 //|     ...
 STATIC mp_obj_t audiobusio_pdmin_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *all_args) {
     #if !CIRCUITPY_AUDIOBUSIO_PDMIN
-    mp_raise_NotImplementedError(translate("PDMIn not available"));
+    mp_raise_NotImplementedError_varg(translate("%q"), MP_QSTR_PDMIn);
     #else
     enum { ARG_clock_pin, ARG_data_pin, ARG_sample_rate, ARG_bit_depth, ARG_mono, ARG_oversample, ARG_startup_delay };
     static const mp_arg_t allowed_args[] = {
@@ -122,20 +122,18 @@ STATIC mp_obj_t audiobusio_pdmin_make_new(const mp_obj_type_t *type, size_t n_ar
     uint32_t sample_rate = args[ARG_sample_rate].u_int;
     uint8_t bit_depth = args[ARG_bit_depth].u_int;
     if (bit_depth % 8 != 0) {
-        mp_raise_ValueError(translate("Bit depth must be multiple of 8."));
+        mp_raise_ValueError_varg(translate("%q must be multiple of 8."), MP_QSTR_bit_depth);
     }
     uint8_t oversample = args[ARG_oversample].u_int;
     if (oversample % 8 != 0) {
-        mp_raise_ValueError(translate("Oversample must be multiple of 8."));
+        mp_raise_ValueError_varg(translate("%q must be multiple of 8."), MP_QSTR_oversample);
     }
     bool mono = args[ARG_mono].u_bool;
 
     mp_float_t startup_delay = (args[ARG_startup_delay].u_obj == MP_OBJ_NULL)
         ? (mp_float_t)STARTUP_DELAY_DEFAULT
         : mp_obj_get_float(args[ARG_startup_delay].u_obj);
-    if (startup_delay < 0.0 || startup_delay > 1.0) {
-        mp_raise_ValueError(translate("Microphone startup delay must be in range 0.0 to 1.0"));
-    }
+    mp_arg_validate_float_range(startup_delay, 0.0f, 1.0f, MP_QSTR_startup_delay);
 
     common_hal_audiobusio_pdmin_construct(self, clock_pin, data_pin, sample_rate,
         bit_depth, mono, oversample);

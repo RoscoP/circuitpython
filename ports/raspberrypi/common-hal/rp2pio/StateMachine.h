@@ -59,6 +59,7 @@ typedef struct {
     bool in_shift_right;
     bool user_interruptible;
     uint8_t offset;
+    uint8_t fifo_depth;  // Either 4 if FIFOs are not joined, or 8 if they are.
 
     // dma-related items
     volatile int pending_buffers;
@@ -94,6 +95,9 @@ uint8_t rp2pio_statemachine_program_offset(rp2pio_statemachine_obj_t *self);
 
 void rp2pio_statemachine_deinit(rp2pio_statemachine_obj_t *self, bool leave_pins);
 void rp2pio_statemachine_dma_complete(rp2pio_statemachine_obj_t *self, int channel);
+
+void rp2pio_statemachine_reset_ok(PIO pio, int sm);
+void rp2pio_statemachine_never_reset(PIO pio, int sm);
 
 extern const mp_obj_type_t rp2pio_statemachine_type;
 

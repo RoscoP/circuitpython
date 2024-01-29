@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-04 12:55-0600\n"
-"PO-Revision-Date: 2023-03-31 14:39+0000\n"
+"PO-Revision-Date: 2023-05-23 22:55+0000\n"
 "Last-Translator: Jose David M <jquintana202020@gmail.com>\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.17-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 
 #: main.c
 msgid ""
@@ -113,6 +113,9 @@ msgstr ""
 #: ports/raspberrypi/common-hal/analogio/AnalogOut.c
 #: ports/raspberrypi/common-hal/rtc/RTC.c ports/stm/common-hal/alarm/__init__.c
 #: ports/stm/common-hal/canio/Listener.c ports/stm/common-hal/rtc/RTC.c
+#: shared-bindings/audiobusio/I2SOut.c shared-bindings/audiobusio/PDMIn.c
+#: shared-bindings/keypad/KeyMatrix.c shared-bindings/keypad/Keys.c
+#: shared-bindings/keypad/ShiftRegisterKeys.c
 msgid "%q"
 msgstr "%q"
 
@@ -137,6 +140,8 @@ msgid "%q in %q must be of type %q, not %q"
 msgstr "%q en %q debe ser del tipo %q, no %q"
 
 #: ports/espressif/common-hal/espulp/ULP.c
+#: ports/mimxrt10xx/common-hal/audiobusio/__init__.c
+#: ports/raspberrypi/common-hal/picodvi/Framebuffer.c
 #: ports/raspberrypi/common-hal/rp2pio/StateMachine.c
 #: shared-bindings/digitalio/DigitalInOut.c
 #: shared-bindings/microcontroller/Pin.c
@@ -179,7 +184,11 @@ msgstr "%q longitud debe ser >= %d"
 msgid "%q must be %d"
 msgstr "%q debe ser %d"
 
-#: py/argcheck.c
+#: py/argcheck.c shared-bindings/displayio/Bitmap.c
+#: shared-bindings/displayio/Display.c
+#: shared-bindings/framebufferio/FramebufferDisplay.c
+#: shared-bindings/is31fl3741/FrameBuffer.c
+#: shared-bindings/rgbmatrix/RGBMatrix.c
 msgid "%q must be %d-%d"
 msgstr "%q debe ser %d-%d"
 
@@ -201,18 +210,23 @@ msgstr "%q debe ser un bytearray o array de tipo 'H' o 'B'"
 
 #: shared-bindings/audiocore/RawSample.c
 msgid "%q must be a bytearray or array of type 'h', 'H', 'b', or 'B'"
-msgstr "%q debe ser un byte-matriz o matriz de tipo 'h', 'H', 'b', o 'B'"
+msgstr "%q debe ser un bytearray o array de tipo 'h', 'H', 'b', o 'B'"
 
 #: ports/espressif/common-hal/analogbufio/BufferedIn.c
 msgid "%q must be array of type 'H'"
 msgstr "%q debe ser un arreglo de tipo 'H'"
 
+#: shared-module/synthio/__init__.c
+msgid "%q must be array of type 'h'"
+msgstr "%q debe ser una matriz de tipo 'h'"
+
 #: ports/raspberrypi/bindings/cyw43/__init__.c py/argcheck.c py/objexcept.c
 #: shared-bindings/canio/CAN.c shared-bindings/digitalio/Pull.c
+#: shared-module/synthio/Synthesizer.c
 msgid "%q must be of type %q or %q, not %q"
 msgstr "%q debe ser del tipo %q o %q, y no %q"
 
-#: py/argcheck.c py/obj.c py/objstrunicode.c
+#: py/argcheck.c py/obj.c py/objstrunicode.c shared-module/synthio/__init__.c
 msgid "%q must be of type %q, not %q"
 msgstr "%q debe ser del tipo %q, y no %q"
 
@@ -431,6 +445,7 @@ msgid "Address must be %d bytes long"
 msgstr "La dirección debe tener %d bytes de longitud"
 
 #: ports/espressif/common-hal/memorymap/AddressRange.c
+#: ports/nrf/common-hal/memorymap/AddressRange.c
 msgid "Address range not allowed"
 msgstr "Rango de dirección no permitido"
 
@@ -475,6 +490,7 @@ msgstr "Todos los canales están en uso"
 msgid "All event channels in use"
 msgstr "Todos los canales de eventos están en uso"
 
+#: ports/raspberrypi/common-hal/picodvi/Framebuffer.c
 #: ports/raspberrypi/common-hal/rp2pio/StateMachine.c
 msgid "All state machines in use"
 msgstr "Todas las máquinas de estado están en uso"
@@ -485,6 +501,7 @@ msgstr ""
 "Todos los canales de eventos de sincronización (sync event channels) están "
 "en uso"
 
+#: ports/raspberrypi/common-hal/picodvi/Framebuffer.c
 #: shared-bindings/pwmio/PWMOut.c
 msgid "All timers for this pin are in use"
 msgstr "Todos los timers para este pin están en uso"
@@ -590,8 +607,7 @@ msgstr "Por debajo de la tasa mínima de refrescamiento"
 
 #: ports/raspberrypi/common-hal/audiobusio/I2SOut.c
 msgid "Bit clock and word select must be sequential pins"
-msgstr ""
-"Los pines de reloj de bit y de selector de palabra deben ser secuenciales"
+msgstr "Los pines \"clock\" y \"word-select\" deben ser consecutivos"
 
 #: ports/atmel-samd/common-hal/audiobusio/I2SOut.c
 msgid "Bit clock and word select must share a clock unit"
@@ -616,13 +632,6 @@ msgstr "Ambos RX y TX requeridos para control de flujo"
 #: ports/atmel-samd/common-hal/rotaryio/IncrementalEncoder.c
 msgid "Both pins must support hardware interrupts"
 msgstr "Ambos pines deben soportar interrupciones por hardware"
-
-#: shared-bindings/displayio/Display.c
-#: shared-bindings/framebufferio/FramebufferDisplay.c
-#: shared-bindings/is31fl3741/FrameBuffer.c
-#: shared-bindings/rgbmatrix/RGBMatrix.c
-msgid "Brightness must be 0-1.0"
-msgstr "El brillo debe ser 0-1.0"
 
 #: shared-bindings/displayio/Display.c
 #: shared-bindings/framebufferio/FramebufferDisplay.c
@@ -946,11 +955,6 @@ msgstr "Fallo ESP-IDF al tomar la memoria"
 msgid "EXTINT channel already in use"
 msgstr "El canal EXTINT ya está siendo utilizado"
 
-#: shared-module/synthio/MidiTrack.c
-#, c-format
-msgid "Error in MIDI stream at position %d"
-msgstr "Error en el flujo MIDI en la posición %d"
-
 #: extmod/modure.c
 msgid "Error in regex"
 msgstr "Error en regex"
@@ -1149,10 +1153,6 @@ msgstr "Error en la inicialización I2C"
 msgid "I2C peripheral in use"
 msgstr "Dispositivo I2C en uso"
 
-#: shared-bindings/audiobusio/I2SOut.c
-msgid "I2SOut not available"
-msgstr "I2SOut no disponible"
-
 #: ports/raspberrypi/bindings/rp2pio/StateMachine.c
 msgid "In-buffer elements must be <= 4 bytes long"
 msgstr ""
@@ -1263,13 +1263,17 @@ msgstr "El temporizador interno watchdog terminó."
 msgid "Interrupt error."
 msgstr "Error de interrupción."
 
-#: ports/mimxrt10xx/common-hal/pwmio/PWMOut.c py/argcheck.c
+#: ports/mimxrt10xx/common-hal/audiobusio/__init__.c
+#: ports/mimxrt10xx/common-hal/pwmio/PWMOut.c
+#: ports/raspberrypi/bindings/picodvi/Framebuffer.c
+#: ports/raspberrypi/common-hal/picodvi/Framebuffer.c py/argcheck.c
 #: shared-bindings/digitalio/DigitalInOut.c
 #: shared-bindings/displayio/EPaperDisplay.c
 msgid "Invalid %q"
 msgstr "%q inválido"
 
 #: ports/atmel-samd/common-hal/microcontroller/Pin.c
+#: ports/mimxrt10xx/common-hal/microcontroller/Pin.c
 #: shared-bindings/microcontroller/Pin.c
 msgid "Invalid %q pin"
 msgstr "Pin %q inválido"
@@ -1320,6 +1324,10 @@ msgstr "Formato inválido"
 #: shared-module/audiocore/WaveFile.c
 msgid "Invalid format chunk size"
 msgstr "Formato de fragmento de formato no válido"
+
+#: shared-bindings/wifi/Radio.c
+msgid "Invalid hex password"
+msgstr "Contraseña hexadecimal no válida"
 
 #: ports/espressif/common-hal/wifi/Radio.c
 msgid "Invalid multicast MAC address"
@@ -1373,11 +1381,6 @@ msgstr "La dirección MAC es incorrecta"
 #: shared-bindings/is31fl3741/IS31FL3741.c
 msgid "Mapping must be a tuple"
 msgstr "El mapping debe ser una dupla"
-
-#: shared-module/displayio/Shape.c
-#, c-format
-msgid "Maximum x value when mirrored is %d"
-msgstr "Valor máximo de x cuando se refleja es %d"
 
 #: shared-bindings/audiobusio/PDMIn.c
 msgid "Microphone startup delay must be in range 0.0 to 1.0"
@@ -1476,6 +1479,10 @@ msgstr "El nuevo bitmap debe ser del mismo tamaño que el bitmap anterior"
 msgid "Nimble out of memory"
 msgstr "Nimble sin memoria"
 
+#: ports/atmel-samd/common-hal/busio/UART.c
+msgid "No %q pin"
+msgstr "Sin pin %q"
+
 #: ports/espressif/common-hal/_bleio/Characteristic.c
 #: ports/nrf/common-hal/_bleio/Characteristic.c
 msgid "No CCCD for this Characteristic"
@@ -1524,14 +1531,12 @@ msgstr "Sin pin MOSI"
 msgid "No MOSI pin"
 msgstr "No pin MOSI"
 
-#: ports/atmel-samd/common-hal/busio/UART.c
 #: ports/espressif/common-hal/busio/UART.c
 #: ports/mimxrt10xx/common-hal/busio/UART.c ports/nrf/common-hal/busio/UART.c
 #: ports/raspberrypi/common-hal/busio/UART.c ports/stm/common-hal/busio/UART.c
 msgid "No RX pin"
 msgstr "Sin pin RX"
 
-#: ports/atmel-samd/common-hal/busio/UART.c
 #: ports/espressif/common-hal/busio/UART.c
 #: ports/mimxrt10xx/common-hal/busio/UART.c ports/nrf/common-hal/busio/UART.c
 #: ports/raspberrypi/common-hal/busio/UART.c ports/stm/common-hal/busio/UART.c
@@ -1756,10 +1761,6 @@ msgstr "Los elementos del búfer de salida deben ser de una longitud <= 4 bytes"
 #: shared-bindings/audiobusio/PDMIn.c
 msgid "Oversample must be multiple of 8."
 msgstr "El sobremuestreo debe ser un múltiplo de 8."
-
-#: shared-bindings/audiobusio/PDMIn.c
-msgid "PDMIn not available"
-msgstr "PDMIn no esta disponible"
 
 #: shared-bindings/pwmio/PWMOut.c
 msgid ""
@@ -2183,8 +2184,8 @@ msgstr "Argumento tuple o struct_time requerido"
 msgid "UART de-init"
 msgstr "Desinicialización de UART"
 
-#: ports/atmel-samd/common-hal/busio/UART.c ports/cxd56/common-hal/busio/UART.c
-#: ports/espressif/common-hal/busio/UART.c ports/stm/common-hal/busio/UART.c
+#: ports/cxd56/common-hal/busio/UART.c ports/espressif/common-hal/busio/UART.c
+#: ports/stm/common-hal/busio/UART.c
 msgid "UART init"
 msgstr "Inicialización de UART"
 
@@ -2550,6 +2551,10 @@ msgstr "addresses esta vacío"
 msgid "annotation must be an identifier"
 msgstr "la anotación debe ser un identificador"
 
+#: extmod/ulab/code/numpy/create.c
+msgid "arange: cannot compute length"
+msgstr "arange: no se puede calcular la longitud"
+
 #: py/modbuiltins.c
 msgid "arg is an empty sequence"
 msgstr "argumento es una secuencia vacía"
@@ -2722,6 +2727,10 @@ msgstr "solo puede tener hasta 4 parámetros para ensamblar Thumb"
 msgid "can only have up to 4 parameters to Xtensa assembly"
 msgstr "solo puede tener hasta 4 parámetros para ensamblador Xtensa"
 
+#: extmod/ulab/code/ndarray.c
+msgid "can only specify one unknown dimension"
+msgstr "sólo puede especificar una dimensión desconocida"
+
 #: py/objtype.c
 msgid "can't add special method to already-subclassed class"
 msgstr "no se puede agregar un método a una clase ya subclasificada"
@@ -2877,6 +2886,10 @@ msgstr "no se puede crear instancia"
 #: py/runtime.c
 msgid "cannot import name %q"
 msgstr "no se puede importar name '%q'"
+
+#: extmod/ulab/code/ndarray.c
+msgid "cannot reshape array"
+msgstr "no puede remodelar la matriz"
 
 #: extmod/moductypes.c
 msgid "cannot unambiguously get sizeof scalar"
@@ -3330,10 +3343,6 @@ msgstr "el tamaño de initial_value es incorrecto"
 #: py/compile.c
 msgid "inline assembler must be a function"
 msgstr "ensamblador en línea debe ser una función"
-
-#: extmod/ulab/code/ndarray.c
-msgid "input and output shapes are not compatible"
-msgstr "Formas de entrada y salida no son compatibles"
 
 #: extmod/ulab/code/numpy/create.c
 msgid "input argument must be an integer, a tuple, or a list"
@@ -3925,11 +3934,7 @@ msgstr "La matriz de salida es demasiado pequeña"
 msgid "out must be a float dense array"
 msgstr "la matriz de salida debe ser densa de números float"
 
-#: shared-bindings/displayio/Bitmap.c
-msgid "out of range of source"
-msgstr "fuera de rango de fuente"
-
-#: shared-bindings/bitmaptools/__init__.c shared-bindings/displayio/Bitmap.c
+#: shared-bindings/bitmaptools/__init__.c
 msgid "out of range of target"
 msgstr "fuera de rango del objetivo"
 
@@ -3954,13 +3959,9 @@ msgstr "los parámetros deben ser registros en secuencia de a2 a a5"
 msgid "parameters must be registers in sequence r0 to r3"
 msgstr "los parametros deben ser registros en secuencia del r0 al r3"
 
-#: shared-bindings/bitmaptools/__init__.c shared-bindings/displayio/Bitmap.c
+#: shared-bindings/bitmaptools/__init__.c
 msgid "pixel coordinates out of bounds"
 msgstr "coordenadas del pixel fuera de límites"
-
-#: shared-bindings/displayio/Bitmap.c
-msgid "pixel value requires too many bits"
-msgstr "valor del pixel require demasiado bits"
 
 #: shared-bindings/displayio/TileGrid.c shared-bindings/vectorio/VectorShape.c
 msgid "pixel_shader must be displayio.Palette or displayio.ColorConverter"
@@ -4063,8 +4064,8 @@ msgid "set unsupported"
 msgstr "sin capacidades para el conjunto"
 
 #: extmod/ulab/code/ndarray.c
-msgid "shape must be a tuple"
-msgstr "forma tiene que ser una tupla"
+msgid "shape must be integer or tuple of integers"
+msgstr "la forma debe ser un número entero o una tupla de números enteros"
 
 #: shared-module/msgpack/__init__.c
 msgid "short read"
@@ -4375,10 +4376,6 @@ msgstr "el valor debe caber en %d byte(s)"
 msgid "value out of range of target"
 msgstr "valor fuera de alcance al blanco"
 
-#: shared-bindings/displayio/Bitmap.c
-msgid "value_count must be > 0"
-msgstr "value_count debe ser > 0"
-
 #: ports/espressif/common-hal/watchdog/WatchDogTimer.c
 msgid "watchdog not initialized"
 msgstr "watchdog no inicializado"
@@ -4442,17 +4439,9 @@ msgstr "numero erroneo de valores a descomprimir"
 msgid "wrong output type"
 msgstr "tipo de salida incorrecta"
 
-#: shared-module/displayio/Shape.c
-msgid "x value out of bounds"
-msgstr "valor x fuera de límites"
-
 #: ports/espressif/common-hal/audiobusio/__init__.c
 msgid "xTaskCreate failed"
 msgstr "fallo en xTaskCreate"
-
-#: shared-module/displayio/Shape.c
-msgid "y value out of bounds"
-msgstr "valor y fuera de límites"
 
 #: extmod/ulab/code/scipy/signal/signal.c
 msgid "zi must be an ndarray"
@@ -4465,6 +4454,44 @@ msgstr "zi debe ser de tipo flotante"
 #: extmod/ulab/code/scipy/signal/signal.c
 msgid "zi must be of shape (n_section, 2)"
 msgstr "zi debe ser una forma (n_section,2)"
+
+#~ msgid "input and output shapes are not compatible"
+#~ msgstr "Formas de entrada y salida no son compatibles"
+
+#~ msgid "shape must be a tuple"
+#~ msgstr "forma tiene que ser una tupla"
+
+#~ msgid "Brightness must be 0-1.0"
+#~ msgstr "El brillo debe ser 0-1.0"
+
+#, c-format
+#~ msgid "Error in MIDI stream at position %d"
+#~ msgstr "Error en el flujo MIDI en la posición %d"
+
+#, c-format
+#~ msgid "Maximum x value when mirrored is %d"
+#~ msgstr "Valor máximo de x cuando se refleja es %d"
+
+#~ msgid "x value out of bounds"
+#~ msgstr "valor x fuera de límites"
+
+#~ msgid "y value out of bounds"
+#~ msgstr "valor y fuera de límites"
+
+#~ msgid "I2SOut not available"
+#~ msgstr "I2SOut no disponible"
+
+#~ msgid "PDMIn not available"
+#~ msgstr "PDMIn no esta disponible"
+
+#~ msgid "out of range of source"
+#~ msgstr "fuera de rango de fuente"
+
+#~ msgid "pixel value requires too many bits"
+#~ msgstr "valor del pixel require demasiado bits"
+
+#~ msgid "value_count must be > 0"
+#~ msgstr "value_count debe ser > 0"
 
 #~ msgid "64 bit types"
 #~ msgstr "tipos de 64 bit"

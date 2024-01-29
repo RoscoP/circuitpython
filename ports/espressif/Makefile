@@ -120,19 +120,25 @@ CFLAGS += -DSTACK_CANARY_VALUE=0xa5a5a5a5
 
 #Debugging/Optimization
 ifeq ($(DEBUG), 1)
-  CFLAGS += -DDEBUG -ggdb
-  OPTIMIZATION_FLAGS ?= -Og
-  # You may want to enable these flags to make setting breakpoints easier.
-  # CFLAGS += -fno-inline -fno-ipa-sra
+	CFLAGS += -ggdb
+	ifeq ($(IDF_TARGET_ARCH),riscv)
+		OPTIMIZATION_FLAGS ?= -Os
+		CFLAGS += -DNDEBUG
+	else
+		OPTIMIZATION_FLAGS ?= -Og
+		CFLAGS += -DDEBUG
+	endif
+	# You may want to enable these flags to make setting breakpoints easier.
+	# CFLAGS += -fno-inline -fno-ipa-sra
 else
-  CFLAGS += -DNDEBUG -ggdb3
-  # RISC-V is larger than xtensa
-  # Use -Os for RISC-V when it overflows
-  ifeq ($(IDF_TARGET_ARCH),riscv)
-  OPTIMIZATION_FLAGS ?= -Os
-  else
-  OPTIMIZATION_FLAGS ?= -O2
-  endif
+	CFLAGS += -DNDEBUG -ggdb3
+	# RISC-V is larger than xtensa
+	# Use -Os for RISC-V when it overflows
+	ifeq ($(IDF_TARGET_ARCH),riscv)
+		OPTIMIZATION_FLAGS ?= -Os
+	else
+		OPTIMIZATION_FLAGS ?= -O2
+	endif
 endif
 
 # option to override compiler optimization level, set in boards/$(BOARD)/mpconfigboard.mk
@@ -405,6 +411,7 @@ ESP_IDF_COMPONENTS_EXPANDED += $(BUILD)/esp-idf/esp-idf/esp32-camera/libesp32-ca
 #$(error $(ESP_IDF_COMPONENTS_EXPANDED))
 endif
 
+ifneq ($(VALID_BOARD),)
 # BOOTLOADER_OFFSET is determined by chip type, based on the ROM bootloader, and is not changeable.
 ifeq ($(IDF_TARGET),esp32)
 BOOTLOADER_OFFSET = 0x1000
@@ -416,6 +423,7 @@ else ifeq ($(IDF_TARGET),esp32s2)
 BOOTLOADER_OFFSET = 0x1000
 else
 $(error unknown IDF_TARGET $(IDF_TARGET))
+endif
 endif
 
 IDF_CMAKE_TARGETS = \
@@ -451,8 +459,12 @@ $(BUILD)/circuitpython-firmware.bin: $(BUILD)/firmware.elf | tools/build_memory_
 	$(Q)esptool.py --chip $(IDF_TARGET) elf2image $(FLASH_FLAGS) --elf-sha256-offset 0xb0 -o $@ $^
 	$(Q)$(PYTHON) tools/build_memory_info.py $< $(BUILD)/esp-idf/sdkconfig $@ $(BUILD)
 
+ifeq ($(VALID_BOARD),)
+$(BUILD)/firmware.bin: invalid-board
+else
 $(BUILD)/firmware.bin: $(BUILD)/circuitpython-firmware.bin | esp-idf-stamp
 	$(Q)$(PYTHON) ../../tools/join_bins.py $@ $(BOOTLOADER_OFFSET) $(BUILD)/esp-idf/bootloader/bootloader.bin $(PARTITION_TABLE_OFFSET) $(BUILD)/esp-idf/partition_table/partition-table.bin $(FIRMWARE_OFFSET) $(BUILD)/circuitpython-firmware.bin
+endif
 
 UF2_FAMILY_ID_esp32s2 = 0xbfdd4eee
 UF2_FAMILY_ID_esp32s3 = 0xc47e5767

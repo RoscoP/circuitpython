@@ -218,9 +218,7 @@ bool rp2pio_statemachine_construct(rp2pio_statemachine_obj_t *self,
                 _current_program_len[i][j] == program_len) {
                 program_offset = _current_program_offset[i][j];
             }
-            int temp_claim = pio_claim_unused_sm(pio, false);
-            if (temp_claim >= 0) {
-                pio_sm_unclaim(pio, temp_claim);
+            if (!pio_sm_is_claimed(pio, j)) {
                 free_count++;
             }
         }
@@ -350,6 +348,8 @@ bool rp2pio_statemachine_construct(rp2pio_statemachine_obj_t *self,
     } else if (!tx_fifo) {
         join = PIO_FIFO_JOIN_RX;
     }
+    self->fifo_depth = (join == PIO_FIFO_JOIN_NONE) ? 4 : 8;
+
     if (rx_fifo) {
         self->rx_dreq = pio_get_dreq(self->pio, self->state_machine, false);
     }
@@ -634,6 +634,16 @@ void common_hal_rp2pio_statemachine_set_frequency(rp2pio_statemachine_obj_t *sel
     pio_sm_clkdiv_restart(self->pio, self->state_machine);
 }
 
+void rp2pio_statemachine_reset_ok(PIO pio, int sm) {
+    uint8_t pio_index = pio_get_index(pio);
+    _never_reset[pio_index][sm] = false;
+}
+
+void rp2pio_statemachine_never_reset(PIO pio, int sm) {
+    uint8_t pio_index = pio_get_index(pio);
+    _never_reset[pio_index][sm] = true;
+}
+
 void rp2pio_statemachine_deinit(rp2pio_statemachine_obj_t *self, bool leave_pins) {
     common_hal_rp2pio_statemachine_stop(self);
     (void)common_hal_rp2pio_statemachine_stop_background_write(self);
@@ -654,9 +664,7 @@ void common_hal_rp2pio_statemachine_deinit(rp2pio_statemachine_obj_t *self) {
 }
 
 void common_hal_rp2pio_statemachine_never_reset(rp2pio_statemachine_obj_t *self) {
-    uint8_t sm = self->state_machine;
-    uint8_t pio_index = pio_get_index(self->pio);
-    _never_reset[pio_index][sm] = true;
+    rp2pio_statemachine_never_reset(self->pio, self->state_machine);
     // TODO: never reset all the pins
 }
 
@@ -682,8 +690,9 @@ static bool _transfer(rp2pio_statemachine_obj_t *self,
     // This implementation is based on SPI but varies because the tx and rx buffers
     // may be different lengths and occur at different times or speeds.
 
-    // Use DMA for large transfers if channels are available
-    const size_t dma_min_size_threshold = 32;
+    // Use DMA for large transfers if channels are available.
+    // Don't exceed FIFO size.
+    const size_t dma_min_size_threshold = self->fifo_depth;
     int chan_tx = -1;
     int chan_rx = -1;
     size_t len = MAX(out_len, in_len);
